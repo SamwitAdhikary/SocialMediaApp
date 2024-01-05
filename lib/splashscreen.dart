@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:social_media/homepage.dart';
+// import 'package:social_media/homepage.dart';
+import 'package:social_media/signup_screen.dart';
 import 'package:social_media/utils/palette.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const MyHomePage(),
+        builder: (context) => const SignupScreen(),
       ),
     );
   }

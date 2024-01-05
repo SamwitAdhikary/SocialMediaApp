@@ -1,17 +1,19 @@
 name: social_media
 description: "A new Flutter project."
 
-publish_to: 'none' 
-
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
 
-
 dependencies:
+  change_app_package_name: ^1.1.0
   cupertino_icons: ^1.0.2
+  firebase_auth: ^4.16.0
+  firebase_core: ^2.24.2
+  firebase_storage: ^11.6.0
   flutter:
     sdk: flutter
   google_fonts: ^6.1.0
@@ -24,7 +26,6 @@ dev_dependencies:
 
 flutter:
 
-
   uses-material-design: true
 
   assets:
@@ -32,4 +33,4 @@ flutter:
   fonts:
     - family: Nekst
       fonts:
-        - asset: assets/fonts/Fontspring-DEMO-nekst-regular.otf
+        - asset: assets/fonts/Nekst-Regular.ttf
