@@ -1,43 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:social_media/signin_screen.dart';
+import 'package:social_media/signup_screen.dart';
 import 'package:social_media/utils/palette.dart';
+// import 'package:unicons/unicons.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class SigninScreen extends StatefulWidget {
+  const SigninScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<SigninScreen> createState() => _SigninScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SigninScreenState extends State<SigninScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPassword = TextEditingController();
 
-  final formKey = GlobalKey<FormFieldState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: Center(
+          // alignment: Alignment.center,
+          // margin: const EdgeInsets.only(left: 20, right: 10),
           child: ListView(
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.only(
               left: 10,
               right: 10,
             ),
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
+                height: MediaQuery.of(context).size.height * 0.15,
               ),
               const Text(
-                "CreateOne",
+                'CreateOne',
                 style: TextStyle(
                   color: Palette.white,
                   fontSize: 25,
+                  // fontWeight: FontWeight.bold,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -45,14 +48,17 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 10,
               ),
               const Text(
-                'Sign Up',
+                'Welcome Back',
                 style: TextStyle(
                   color: Palette.white,
-                  fontSize: 40,
+                  fontSize: 35,
                 ),
               ),
+              // SizedBox(
+              //   height: 5,
+              // ),
               const Text(
-                "Let's get started by signing up here...",
+                "Let's get started by logging here...",
                 style: TextStyle(
                   color: Palette.white,
                   fontSize: 15,
@@ -62,9 +68,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 20,
               ),
               Form(
-                key: formKey,
+                key: _formKey,
                 child: Column(
                   children: [
+                    // Email Field
                     TextFormField(
                       style: const TextStyle(color: Palette.white),
                       controller: _emailController,
@@ -74,8 +81,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         alignLabelWithHint: true,
                         label: const Text(
-                          "Email",
-                          style: TextStyle(color: Colors.grey),
+                          'Email',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -89,6 +98,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       height: 15,
                     ),
+
+                    // Password Field
                     TextFormField(
                       style: const TextStyle(color: Palette.white),
                       controller: _passwordController,
@@ -97,57 +108,21 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         suffixIcon: IconButton(
-                          onPressed: () {
-                            print("pressed password eye");
-                          },
-                          icon: Icon(
-                            MdiIcons.eye,
-                          ),
+                          onPressed: () {},
+                          icon: Icon(MdiIcons.eye),
                         ),
                         alignLabelWithHint: true,
                         label: const Text(
-                          "Password",
-                          style: TextStyle(color: Colors.grey),
+                          'Password',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                       obscureText: true,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Email cannot be empty";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    TextFormField(
-                      style: const TextStyle(color: Palette.white),
-                      controller: _confirmPassword,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            print("pressed conirm password eye");
-                          },
-                          icon: Icon(
-                            MdiIcons.eye,
-                          ),
-                        ),
-                        alignLabelWithHint: true,
-                        label: const Text(
-                          "Confirm Password",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Email cannot be empty";
-                        } else if (value != _passwordController.text) {
-                          return "Password didn't matched";
+                          return "Password cannot be empty";
                         }
                         return null;
                       },
@@ -176,7 +151,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     borderRadius: BorderRadius.circular(25),
                     child: const Center(
                       child: Text(
-                        "Sign Up",
+                        "Sign In",
                         style: TextStyle(
                           color: Palette.black,
                           fontWeight: FontWeight.bold,
@@ -191,7 +166,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 50,
               ),
               const Text(
-                "Or sign up with",
+                "Or sign in with",
                 style: TextStyle(
                   color: Colors.grey,
                 ),
@@ -237,13 +212,13 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 80,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Already have an account? ",
+                    "Dont't have an account? ",
                     style: TextStyle(color: Palette.white),
                   ),
                   GestureDetector(
@@ -251,12 +226,12 @@ class _SignupScreenState extends State<SignupScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SigninScreen(),
+                          builder: (context) => const SignupScreen(),
                         ),
                       );
                     },
                     child: const Text(
-                      "Sign In Now",
+                      "Sign Up Now",
                       style: TextStyle(
                         color: Palette.yellow,
                       ),

@@ -1,6 +1,6 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media/utils/palette.dart';
-import 'package:unicons/unicons.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -23,8 +23,8 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                buttons(UniconsLine.comment_message, 20),
-                buttons(UniconsLine.search, 20)
+                buttons(FluentIcons.search_48_filled, 20),
+                buttons(FluentIcons.chat_28_filled, 20),
               ],
             ),
             const SizedBox(
@@ -91,6 +91,7 @@ class MyHomePage extends StatelessWidget {
                           borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(23)),
                           child: SizedBox(
+                            
                             // color: Colors.red,
                             width: MediaQuery.of(context).size.width * 0.45,
                             height: MediaQuery.of(context).size.height * 0.05,
@@ -99,9 +100,9 @@ class MyHomePage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(
-                                  UniconsSolid.image_v,
+                                  Icons.image,
                                   color: Palette.darkgrey,
-                                  size: 18,
+                                  size: 20,
                                 ),
                                 const SizedBox(
                                   width: 5,
@@ -140,7 +141,7 @@ class MyHomePage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(
-                                  UniconsLine.video,
+                                  FluentIcons.video_20_regular,
                                   color: Palette.darkgrey,
                                   // size: 18,
                                 ),
