@@ -17,6 +17,14 @@ class _SigninScreenState extends State<SigninScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  bool showPass = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // showPass = !showPass;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,7 +41,7 @@ class _SigninScreenState extends State<SigninScreen> {
             physics: const NeverScrollableScrollPhysics(),
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.15,
+                height: MediaQuery.of(context).size.height * 0.12,
               ),
               const Text(
                 'CreateOne',
@@ -108,8 +116,14 @@ class _SigninScreenState extends State<SigninScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: Icon(MdiIcons.eye),
+                          onPressed: () {
+                            setState(() {
+                              showPass = !showPass;
+                            });
+                          },
+                          icon: showPass
+                              ? Icon(MdiIcons.eye)
+                              : Icon(MdiIcons.eyeOff),
                         ),
                         alignLabelWithHint: true,
                         label: const Text(
@@ -119,7 +133,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                         ),
                       ),
-                      obscureText: true,
+                      obscureText: !showPass ? true : false,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Password cannot be empty";
@@ -146,7 +160,16 @@ class _SigninScreenState extends State<SigninScreen> {
                   borderRadius: BorderRadius.circular(25),
                   color: Palette.yellow,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      if (_formKey.currentState!.validate()) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text(
+                          'Validated',
+                          style: TextStyle(color: Palette.white),
+                        )));
+                      }
+                    },
                     splashColor: Palette.white,
                     borderRadius: BorderRadius.circular(25),
                     child: const Center(
