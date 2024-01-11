@@ -1,5 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media/AuthClass/auth_class.dart';
+import 'package:social_media/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -91,7 +95,6 @@ class MyHomePage extends StatelessWidget {
                           borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(23)),
                           child: SizedBox(
-                            
                             // color: Colors.red,
                             width: MediaQuery.of(context).size.width * 0.45,
                             height: MediaQuery.of(context).size.height * 0.05,
@@ -164,6 +167,31 @@ class MyHomePage extends StatelessWidget {
                     ],
                   )
                 ],
+              ),
+            ),
+            SizedBox(
+              height: 200,
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  bool logout = await AuthClass().signOutFromGoogle();
+                  if (logout == true) {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SigninScreen()));
+                  } else {
+                    print(logout.toString());
+                  }
+                },
+                child: const Text(
+                  "Signout",
+                  style: TextStyle(
+                    color: Palette.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             )
           ],

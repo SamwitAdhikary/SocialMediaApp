@@ -1,5 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:social_media/AuthClass/auth_class.dart';
+import 'package:social_media/homepage.dart';
 import 'package:social_media/signup_screen.dart';
 import 'package:social_media/utils/palette.dart';
 // import 'package:unicons/unicons.dart';
@@ -17,12 +21,17 @@ class _SigninScreenState extends State<SigninScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  bool _isLoading = false;
+
   bool showPass = false;
 
+  ValueNotifier userCredentials = ValueNotifier("");
+
   @override
-  void initState() {
-    super.initState();
-    // showPass = !showPass;
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
   }
 
   @override
@@ -97,8 +106,12 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
+                        const pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                        final regEx = RegExp(pattern);
                         if (value!.isEmpty) {
                           return "Email cannot be empty";
+                        } else if (!regEx.hasMatch(value)) {
+                          return 'Enter a valid email';
                         }
                         return null;
                       },
@@ -147,44 +160,76 @@ class _SigninScreenState extends State<SigninScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width * 0.65,
-                // margin: EdgeInsets.only(left: 50, right: 50),
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Palette.yellow,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Material(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Palette.yellow,
-                  child: InkWell(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                content: Text(
-                          'Validated',
-                          style: TextStyle(color: Palette.white),
-                        )));
-                      }
-                    },
-                    splashColor: Palette.white,
-                    borderRadius: BorderRadius.circular(25),
-                    child: const Center(
-                      child: Text(
-                        "Sign In",
-                        style: TextStyle(
-                          color: Palette.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+              !_isLoading
+                  ? Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      // margin: EdgeInsets.only(left: 50, right: 50),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Palette.yellow,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Palette.yellow,
+                        child: InkWell(
+                          onTap: () async {
+                            FocusScope.of(context).unfocus();
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              String result = await AuthClass().loginUser(
+                                  email: _emailController.text,
+                                  password: _passwordController.text);
+
+                              if (result == "success") {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MyHomePage()));
+                              } else {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      result,
+                                      style: const TextStyle(
+                                        color: Palette.white,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          splashColor: Palette.white,
+                          borderRadius: BorderRadius.circular(25),
+                          child: const Center(
+                            child: Text(
+                              "Sign In",
+                              style: TextStyle(
+                                color: Palette.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(
+                        color: Palette.yellow,
+                      ),
                     ),
-                  ),
-                ),
-              ),
               const SizedBox(
                 height: 50,
               ),
@@ -209,7 +254,27 @@ class _SigninScreenState extends State<SigninScreen> {
                   borderRadius: BorderRadius.circular(25),
                   color: Palette.white,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      String result = await AuthClass().signInWithGoogle();
+
+                      if (result == "success") {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyHomePage(),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Something went wrong! Please try again after sometime.",
+                              style: TextStyle(color: Palette.white),
+                            ),
+                          ),
+                        );
+                      }
+                    },
                     splashColor: Palette.yellow,
                     borderRadius: BorderRadius.circular(25),
                     child: Row(

@@ -1,13 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:social_media/AuthClass/auth_class.dart';
 import 'package:social_media/homepage.dart';
 import 'package:social_media/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
-import 'package:social_media/models/usermodel.dart' as model;
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -21,14 +18,13 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final _formKey = GlobalKey<FormState>();
 
   bool showPass = false;
   bool showConfPass = false;
   String res = "";
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -36,70 +32,6 @@ class _SignupScreenState extends State<SignupScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPassword.dispose();
-  }
-
-  Future<String> signUpUser(
-      {required String email, required String password}) async {
-    res = "Some error occured";
-
-    try {
-      if (email.isNotEmpty || password.isNotEmpty) {
-        UserCredential creds = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
-
-        model.User user = model.User(
-          username: "",
-          uid: creds.user!.uid,
-          photoUrl: "",
-          email: email,
-          bio: "",
-          followers: [],
-          following: [],
-        );
-
-        await _firestore
-            .collection("users")
-            .doc(creds.user!.uid)
-            .set(user.toJson());
-
-        res = "success";
-      } else {
-        res = "Please enter all fields";
-      }
-    } catch (e) {
-      String errorText = getMessageFromErrorCode(e);
-      return errorText;
-    }
-    return res;
-  }
-
-  String getMessageFromErrorCode(error) {
-    switch (error.code) {
-      case "ERROR_EMAIL_ALREADY_IN_USE":
-      case "account-exists-with-different-credential":
-      case "email-already-in-use":
-        return "Email already used. Go to sign in page.";
-      case "ERROR_WRONG_PASSWORD":
-      case "wrong-password":
-        return "Wrong email/password combination.";
-      case "ERROR_USER_NOT_FOUND":
-      case "user-not-found":
-        return "No user found with this email.";
-      case "ERROR_USER_DISABLED":
-      case "user-disabled":
-        return "User disabled.";
-      case "ERROR_TOO_MANY_REQUESTS":
-      case "operation-not-allowed":
-        return "Too many requests to log into this account.";
-      case "ERROR_OPERATION_NOT_ALLOWED":
-      case "operation-not-allowed":
-        return "Server error, please try again later.";
-      case "ERROR_INVALID_EMAIL":
-      case "invalid-email":
-        return "Email address is invalid.";
-      default:
-        return "Sign up failed. Please try again.";
-    }
   }
 
   @override
@@ -259,58 +191,75 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width * 0.65,
-                // margin: EdgeInsets.only(left: 50, right: 50),
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Palette.yellow,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Material(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Palette.yellow,
-                  child: InkWell(
-                    onTap: () async {
-                      FocusScope.of(context).unfocus();
-                      if (_formKey.currentState!.validate()) {
-                        String result = await signUpUser(
-                            email: _emailController.text,
-                            password: _confirmPassword.text);
+              !_isLoading
+                  ? Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      // margin: EdgeInsets.only(left: 50, right: 50),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Palette.yellow,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Palette.yellow,
+                        child: InkWell(
+                          onTap: () async {
+                            FocusScope.of(context).unfocus();
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              String result = await AuthClass().signUpUser(
+                                  email: _emailController.text,
+                                  password: _confirmPassword.text);
 
-                        if (result == "success") {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MyHomePage()));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                result,
-                                style: const TextStyle(color: Palette.white),
+                              if (result == "success") {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MyHomePage()));
+                              } else {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      result,
+                                      style:
+                                          const TextStyle(color: Palette.white),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          splashColor: Palette.white,
+                          borderRadius: BorderRadius.circular(25),
+                          child: const Center(
+                            child: Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                color: Palette.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-                          );
-                        }
-                      }
-                    },
-                    splashColor: Palette.white,
-                    borderRadius: BorderRadius.circular(25),
-                    child: const Center(
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Palette.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          ),
                         ),
                       ),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(
+                        color: Palette.yellow,
+                      ),
                     ),
-                  ),
-                ),
-              ),
               const SizedBox(
                 height: 50,
               ),
