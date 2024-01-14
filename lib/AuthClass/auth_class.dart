@@ -1,13 +1,26 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:social_media/AuthClass/storage_methods.dart';
 import 'package:social_media/models/usermodel.dart' as model;
 
 class AuthClass {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<model.User> getUserDetails() async {
+    User currentUser = _auth.currentUser!;
+
+    DocumentSnapshot documentSnapshot =
+        await _firestore.collection("users").doc(currentUser.uid).get();
+
+    return model.User.fromSnap(documentSnapshot);
+  }
 
   Future<String> signUpUser(
       {required String email, required String password}) async {
@@ -22,6 +35,8 @@ class AuthClass {
           username: "",
           uid: creds.user!.uid,
           photoUrl: "",
+          firstname: "",
+          lastname: "",
           email: email,
           bio: "",
           followers: [],
@@ -115,6 +130,8 @@ class AuthClass {
           username: "",
           uid: gUser!.uid,
           photoUrl: "",
+          firstname: "",
+          lastname: "",
           email: gUser.email!,
           bio: "",
           followers: [],
@@ -135,5 +152,39 @@ class AuthClass {
       return false;
     }
     return true;
+  }
+
+  Future<String> createProfile({
+    required String firstname,
+    required String lastname,
+    required String username,
+    String? bio,
+    required Uint8List file,
+  }) async {
+    String res = "Something error occured";
+    try {
+      String photoUrl = await StorageMethods()
+          .uploadImageToStorage('profilePics', file, false);
+
+      _firestore.collection("users").doc(_auth.currentUser!.uid).update({
+        "firstname": firstname,
+        "lastname": lastname,
+        "username": username,
+        "photoUrl": photoUrl,
+        "bio": bio,
+      });
+      res = "success";
+    } catch (e) {
+      return e.toString();
+    }
+    return res;
+  }
+
+  Future<bool> checkUsername(String username) async {
+    final result = await _firestore
+        .collection("users")
+        .where('username', isEqualTo: username)
+        .get();
+    return result.docs.isEmpty;
   }
 }

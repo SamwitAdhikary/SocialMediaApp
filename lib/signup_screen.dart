@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:social_media/AuthClass/auth_class.dart';
-import 'package:social_media/homepage.dart';
+import 'package:social_media/create_profile.dart';
 import 'package:social_media/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
 
@@ -223,7 +223,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const MyHomePage()));
+                                            const CreateProfile()));
                               } else {
                                 setState(() {
                                   _isLoading = false;
