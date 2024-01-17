@@ -1,13 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:social_media/AuthClass/auth_class.dart';
-import 'package:social_media/homepage.dart';
+import 'package:social_media/screens/homepage.dart';
 import 'package:social_media/utils/palette.dart';
 import 'package:social_media/utils/utils.dart';
 
@@ -247,8 +247,10 @@ class _CreateProfileState extends State<CreateProfile> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const MyHomePage()));
+                                          builder: (context) => MyHomePage(
+                                                uid: FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                              )));
                                 }
                               }
                             }

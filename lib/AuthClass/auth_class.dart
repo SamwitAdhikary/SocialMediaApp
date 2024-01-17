@@ -1,10 +1,10 @@
-import 'dart:io';
+// import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:social_media/AuthClass/storage_methods.dart';
 import 'package:social_media/models/usermodel.dart' as model;
 

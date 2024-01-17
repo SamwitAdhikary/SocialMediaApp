@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:social_media/screens/signin_screen.dart';
 // import 'package:social_media/homepage.dart';
-import 'package:social_media/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
 
 class SplashScreen extends StatefulWidget {

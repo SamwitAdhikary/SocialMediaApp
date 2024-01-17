@@ -1,13 +1,42 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media/AuthClass/auth_class.dart';
-import 'package:social_media/signin_screen.dart';
+import 'package:social_media/screens/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class MyHomePage extends StatefulWidget {
+  final String uid;
+  const MyHomePage({super.key, required this.uid});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  var userData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    try {
+      var userSnap = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(widget.uid)
+          .get();
+
+      userData = userSnap.data()!;
+      setState(() {});
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +199,30 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             SizedBox(
+              height: 20,
+            ),
+            userData['firstname'] != null
+                ? Text(
+                    userData['firstname'],
+                    style: TextStyle(
+                      color: Palette.white,
+                    ),
+                  )
+                : Text("null"),
+            SizedBox(
+              height: 20,
+            ),
+            userData['photoUrl'] != null
+                ? CircleAvatar(
+                    backgroundColor: Colors.red,
+                    radius: 40,
+                    backgroundImage: NetworkImage(userData['photoUrl']),
+                  )
+                : const CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    radius: 40,
+                  ),
+            const SizedBox(
               height: 200,
             ),
             Center(

@@ -1,38 +1,37 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:social_media/AuthClass/auth_class.dart';
-import 'package:social_media/create_profile.dart';
-import 'package:social_media/homepage.dart';
-import 'package:social_media/signup_screen.dart';
+import 'package:social_media/screens/create_profile.dart';
+import 'package:social_media/screens/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
-// import 'package:unicons/unicons.dart';
 
-class SigninScreen extends StatefulWidget {
-  const SigninScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<SigninScreen> createState() => _SigninScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SigninScreenState extends State<SigninScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPassword = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
-  bool _isLoading = false;
-
   bool showPass = false;
+  bool showConfPass = false;
+  String res = "";
 
-  ValueNotifier userCredentials = ValueNotifier("");
+  bool _isLoading = false;
 
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPassword.dispose();
   }
 
   @override
@@ -40,25 +39,22 @@ class _SigninScreenState extends State<SigninScreen> {
     return SafeArea(
       child: Scaffold(
         body: Center(
-          // alignment: Alignment.center,
-          // margin: const EdgeInsets.only(left: 20, right: 10),
           child: ListView(
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.only(
               left: 10,
               right: 10,
             ),
-            physics: const NeverScrollableScrollPhysics(),
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.12,
               ),
               const Text(
-                'CreateOne',
+                "CreateOne",
                 style: TextStyle(
                   color: Palette.white,
                   fontSize: 25,
-                  // fontWeight: FontWeight.bold,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -66,17 +62,14 @@ class _SigninScreenState extends State<SigninScreen> {
                 height: 10,
               ),
               const Text(
-                'Welcome Back',
+                'Sign Up',
                 style: TextStyle(
                   color: Palette.white,
-                  fontSize: 35,
+                  fontSize: 40,
                 ),
               ),
-              // SizedBox(
-              //   height: 5,
-              // ),
               const Text(
-                "Let's get started by logging here...",
+                "Let's get started by signing up here...",
                 style: TextStyle(
                   color: Palette.white,
                   fontSize: 15,
@@ -89,7 +82,6 @@ class _SigninScreenState extends State<SigninScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Email Field
                     TextFormField(
                       style: const TextStyle(color: Palette.white),
                       controller: _emailController,
@@ -99,10 +91,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         ),
                         alignLabelWithHint: true,
                         label: const Text(
-                          'Email',
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
+                          "Email",
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -120,8 +110,6 @@ class _SigninScreenState extends State<SigninScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-
-                    // Password Field
                     TextFormField(
                       style: const TextStyle(color: Palette.white),
                       controller: _passwordController,
@@ -136,21 +124,63 @@ class _SigninScreenState extends State<SigninScreen> {
                             });
                           },
                           icon: showPass
-                              ? Icon(MdiIcons.eye)
-                              : Icon(MdiIcons.eyeOff),
+                              ? Icon(
+                                  MdiIcons.eye,
+                                )
+                              : Icon(
+                                  MdiIcons.eyeOff,
+                                ),
                         ),
                         alignLabelWithHint: true,
                         label: const Text(
-                          'Password',
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
+                          "Password",
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ),
                       obscureText: !showPass ? true : false,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Password cannot be empty";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      style: const TextStyle(color: Palette.white),
+                      controller: _confirmPassword,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              showConfPass = !showConfPass;
+                            });
+                          },
+                          icon: showConfPass
+                              ? Icon(
+                                  MdiIcons.eye,
+                                )
+                              : Icon(
+                                  MdiIcons.eyeOff,
+                                ),
+                        ),
+                        alignLabelWithHint: true,
+                        label: const Text(
+                          "Confirm Password",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      obscureText: !showConfPass ? true : false,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Confirm Password cannot be empty";
+                        } else if (value != _passwordController.text) {
+                          return "Password didn't matched";
                         }
                         return null;
                       },
@@ -181,9 +211,9 @@ class _SigninScreenState extends State<SigninScreen> {
                               setState(() {
                                 _isLoading = true;
                               });
-                              String result = await AuthClass().loginUser(
+                              String result = await AuthClass().signUpUser(
                                   email: _emailController.text,
-                                  password: _passwordController.text);
+                                  password: _confirmPassword.text);
 
                               if (result == "success") {
                                 setState(() {
@@ -193,7 +223,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const MyHomePage()));
+                                            const CreateProfile()));
                               } else {
                                 setState(() {
                                   _isLoading = false;
@@ -202,9 +232,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                   SnackBar(
                                     content: Text(
                                       result,
-                                      style: const TextStyle(
-                                        color: Palette.white,
-                                      ),
+                                      style:
+                                          const TextStyle(color: Palette.white),
                                     ),
                                   ),
                                 );
@@ -215,7 +244,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           borderRadius: BorderRadius.circular(25),
                           child: const Center(
                             child: Text(
-                              "Sign In",
+                              "Sign Up",
                               style: TextStyle(
                                 color: Palette.black,
                                 fontWeight: FontWeight.bold,
@@ -234,80 +263,60 @@ class _SigninScreenState extends State<SigninScreen> {
               const SizedBox(
                 height: 50,
               ),
-              const Text(
-                "Or sign in with",
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              // const Text(
+              //   "Or sign up with",
+              //   style: TextStyle(
+              //     color: Colors.grey,
+              //   ),
+              //   textAlign: TextAlign.center,
+              // ),
+              // const SizedBox(
+              //   height: 50,
+              // ),
+              // Container(
+              //   width: MediaQuery.of(context).size.width,
+              //   height: 50,
+              //   decoration: BoxDecoration(
+              //     color: Palette.yellow,
+              //     borderRadius: BorderRadius.circular(25),
+              //   ),
+              //   child: Material(
+              //     borderRadius: BorderRadius.circular(25),
+              //     color: Palette.white,
+              //     child: InkWell(
+              //       onTap: () {},
+              //       splashColor: Palette.yellow,
+              //       borderRadius: BorderRadius.circular(25),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           Icon(
+              //             MdiIcons.google,
+              //           ),
+              //           const SizedBox(
+              //             width: 10,
+              //           ),
+              //           const Text(
+              //             "Continue with Google",
+              //             style: TextStyle(
+              //               color: Palette.black,
+              //               fontWeight: FontWeight.bold,
+              //               fontSize: 16,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(
                 height: 50,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Palette.yellow,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Material(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Palette.white,
-                  child: InkWell(
-                    onTap: () async {
-                      String result = await AuthClass().signInWithGoogle();
-
-                      if (result == "success") {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CreateProfile(),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Something went wrong! Please try again after sometime.",
-                              style: TextStyle(color: Palette.white),
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    splashColor: Palette.yellow,
-                    borderRadius: BorderRadius.circular(25),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          MdiIcons.google,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text(
-                          "Continue with Google",
-                          style: TextStyle(
-                            color: Palette.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 80,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Dont't have an account? ",
+                    "Already have an account? ",
                     style: TextStyle(color: Palette.white),
                   ),
                   GestureDetector(
@@ -315,12 +324,12 @@ class _SigninScreenState extends State<SigninScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SignupScreen(),
+                          builder: (context) => const SigninScreen(),
                         ),
                       );
                     },
                     child: const Text(
-                      "Sign Up Now",
+                      "Sign In Now",
                       style: TextStyle(
                         color: Palette.yellow,
                       ),
