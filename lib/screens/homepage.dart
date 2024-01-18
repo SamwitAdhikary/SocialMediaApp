@@ -1,275 +1,324 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:social_media/AuthClass/auth_class.dart';
-import 'package:social_media/screens/signin_screen.dart';
 import 'package:social_media/utils/palette.dart';
 
 class MyHomePage extends StatefulWidget {
-  final String uid;
-  const MyHomePage({super.key, required this.uid});
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var userData = {};
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
-  getData() async {
-    try {
-      var userSnap = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(widget.uid)
-          .get();
-
-      userData = userSnap.data()!;
-      setState(() {});
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            Row(
-              children: [
-                const Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 20, left: 20),
-                    child: Text(
-                      'CreateOne',
-                      style: TextStyle(color: Palette.white, fontSize: 30),
-                    ),
-                  ),
-                ),
-                buttons(FluentIcons.search_48_filled, 20),
-                buttons(FluentIcons.chat_28_filled, 20),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.12,
-              decoration: BoxDecoration(
-                color: Palette.grey,
-                borderRadius: BorderRadius.circular(23),
+    return Scaffold(
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          const SliverAppBar(
+            snap: true,
+            floating: true,
+            backgroundColor: Palette.black,
+            elevation: 0,
+            title: Text(
+              "CreateOne",
+              style: TextStyle(
+                color: Palette.white,
+                fontSize: 30,
               ),
-              child: Column(
-                children: [
-                  // Compose new post section
-                  Material(
+            ),
+            actions: [
+              Icon(
+                FluentIcons.search_48_filled,
+                color: Palette.white,
+                size: 30,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Icon(
+                FluentIcons.chat_48_regular,
+                color: Palette.white,
+                size: 30,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
+        ],
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 100,
+                  decoration: BoxDecoration(
                     color: Palette.grey,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(23),
-                      topRight: Radius.circular(23),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        print("pressed compose new post");
-                      },
-                      splashColor: Colors.grey.shade900,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(23),
-                          topRight: Radius.circular(23)),
-                      child: Container(
-                        // color: Colors.red,
-                        height: MediaQuery.of(context).size.height * 0.05,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        padding: const EdgeInsets.only(left: 15, top: 10),
-
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Compose new post',
-                          style: TextStyle(
-                            fontSize: 14.5,
-                            color: Palette.darkgrey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  Divider(
-                    color: Palette.darkgrey,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Material(
                         color: Palette.grey,
                         borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(23),
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
                         ),
                         child: InkWell(
-                          onTap: () {
-                            print("pressed on add photo");
-                          },
-                          splashColor: Colors.grey.shade900,
+                          onTap: () {},
                           borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(23)),
-                          child: SizedBox(
-                            // color: Colors.red,
-                            width: MediaQuery.of(context).size.width * 0.45,
-                            height: MediaQuery.of(context).size.height * 0.05,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.image,
-                                  color: Palette.darkgrey,
-                                  size: 20,
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            height: 40,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 10, left: 10),
+                              child: Text(
+                                "Compose a new post",
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                const Text(
-                                  'Add Photo',
-                                  style: TextStyle(
-                                    color: Palette.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.5,
-                                  ),
-                                )
-                              ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                      Material(
-                        color: Palette.grey,
-                        borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(23)),
-                        child: InkWell(
-                          onTap: () {
-                            print("pressed on add video");
-                          },
-                          splashColor: Colors.grey.shade900,
-                          borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(23),
-                          ),
-                          child: SizedBox(
-                            // color: Colors.red,
-                            width: MediaQuery.of(context).size.width * 0.45,
-                            height: MediaQuery.of(context).size.height * 0.05,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  FluentIcons.video_20_regular,
-                                  color: Palette.darkgrey,
-                                  // size: 18,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                const Text(
-                                  'Add Video',
-                                  style: TextStyle(
-                                    color: Palette.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.5,
+                      Divider(
+                        color: Colors.grey.shade700,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Material(
+                            color: Palette.grey,
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(20),
+                            ),
+                            child: InkWell(
+                              onTap: () {},
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(5),
+                              ),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.45,
+                                height: 40,
+                                // color: Colors.blue,
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      const Text(
+                                        "Add Photo",
+                                        style: TextStyle(color: Palette.white),
+                                      )
+                                    ],
                                   ),
-                                )
-                              ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                          Material(
+                            color: Palette.grey,
+                            borderRadius: const BorderRadius.only(
+                              bottomRight: Radius.circular(20),
+                            ),
+                            child: InkWell(
+                              onTap: () {},
+                              borderRadius: const BorderRadius.only(
+                                bottomRight: Radius.circular(5),
+                              ),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.45,
+                                height: 40,
+                                // color: Colors.blue,
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.videocam_outlined,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      const Text(
+                                        "Add Video",
+                                        style: TextStyle(color: Palette.white),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            userData['firstname'] != null
-                ? Text(
-                    userData['firstname'],
-                    style: TextStyle(
-                      color: Palette.white,
-                    ),
-                  )
-                : Text("null"),
-            SizedBox(
-              height: 20,
-            ),
-            userData['photoUrl'] != null
-                ? CircleAvatar(
-                    backgroundColor: Colors.red,
-                    radius: 40,
-                    backgroundImage: NetworkImage(userData['photoUrl']),
-                  )
-                : const CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    radius: 40,
-                  ),
-            const SizedBox(
-              height: 200,
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  bool logout = await AuthClass().signOutFromGoogle();
-                  if (logout == true) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SigninScreen()));
-                  } else {
-                    print(logout.toString());
-                  }
-                },
-                child: const Text(
-                  "Signout",
-                  style: TextStyle(
-                    color: Palette.black,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            )
-          ],
+              post(),
+              post(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget buttons(IconData icon, double right) {
-    return Padding(
-      padding: EdgeInsets.only(top: 20, right: right),
-      child: Container(
-        height: 45,
-        width: 45,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Palette.white,
-            width: 1,
+  Widget post() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.6,
+      width: MediaQuery.of(context).size.width,
+      // color: Colors.red,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 20,
           ),
-        ),
-        child: Icon(
-          icon,
-          color: Palette.white,
-        ),
+          Container(
+            padding: const EdgeInsets.only(left: 10),
+            alignment: Alignment.centerLeft,
+            width: MediaQuery.of(context).size.width,
+            // color: Colors.blue,
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Palette.yellow,
+                  backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Samwit Adhikary",
+                      style: TextStyle(
+                        color: Palette.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "2 days ago",
+                      style: TextStyle(
+                        color: Palette.darkgrey,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.95,
+            child: const Text(
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+              style: TextStyle(
+                color: Palette.white,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1682687220777-2c60708d6889?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width,
+            // color: Colors.red,
+            child: const Row(
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+
+                // Like Button
+                Icon(
+                  FluentIcons.heart_48_regular,
+                  color: Palette.white,
+                  size: 25,
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "0",
+                  style: TextStyle(
+                    color: Palette.white,
+                    fontSize: 15,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+
+                // Comment Button
+                Icon(
+                  FluentIcons.comment_48_regular,
+                  color: Palette.white,
+                  size: 25,
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "0",
+                  style: TextStyle(
+                    color: Palette.white,
+                    fontSize: 15,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Divider(
+            color: Colors.grey.shade700,
+          )
+        ],
       ),
     );
   }

@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 // import 'package:social_media/create_profile.dart';
 import 'package:social_media/providers/user_provider.dart';
 import 'package:social_media/screens/bottom_nav.dart';
-import 'package:social_media/screens/homepage.dart';
 import 'package:social_media/screens/signin_screen.dart';
 // import 'package:social_media/homepage.dart';
 // import 'package:social_media/splashscreen.dart';
@@ -38,31 +37,28 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Nekst',
         ),
         debugShowCheckedModeBanner: false,
-        // home: StreamBuilder(
-        //   stream: FirebaseAuth.instance.authStateChanges(),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.active) {
-        //       if (snapshot.hasData) {
-        //         return MyHomePage(
-        //           uid: FirebaseAuth.instance.currentUser!.uid,
-        //         );
-        //       } else if (snapshot.hasError) {
-        //         return Center(
-        //           child: Text('${snapshot.error}'),
-        //         );
-        //       }
-        //     }
-        //     if (snapshot.connectionState == ConnectionState.waiting) {
-        //       return const Center(
-        //         child: CircularProgressIndicator(
-        //           color: Palette.yellow,
-        //         ),
-        //       );
-        //     }
-        //     return const SigninScreen();
-        //   },
-        // ),
-        home: const BottomNavigation(),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              if (snapshot.hasData) {
+                return const BottomNavigation();
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('${snapshot.error}'),
+                );
+              }
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Palette.yellow,
+                ),
+              );
+            }
+            return const SigninScreen();
+          },
+        ),
       ),
     );
   }

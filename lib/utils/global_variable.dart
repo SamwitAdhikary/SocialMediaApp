@@ -4,7 +4,7 @@ import 'package:social_media/screens/homepage.dart';
 import 'package:social_media/utils/palette.dart';
 
 List<Widget> homeScreenItems = [
-  MyHomePage(uid: FirebaseAuth.instance.currentUser!.uid),
+  const MyHomePage(),
   const Center(
     child: Text(
       'Explore Screen',

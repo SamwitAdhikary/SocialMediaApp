@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:social_media/AuthClass/auth_class.dart';
+import 'package:social_media/screens/bottom_nav.dart';
 import 'package:social_media/screens/create_profile.dart';
-import 'package:social_media/screens/homepage.dart';
+import 'package:social_media/screens/signup_screen.dart';
 import 'package:social_media/utils/palette.dart';
 // import 'package:unicons/unicons.dart';
 
@@ -190,12 +190,12 @@ class _SigninScreenState extends State<SigninScreen> {
                                   _isLoading = false;
                                 });
                                 Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MyHomePage(
-                                              uid: FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                            )));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BottomNavigation(),
+                                  ),
+                                );
                               } else {
                                 setState(() {
                                   _isLoading = false;
@@ -317,7 +317,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SigninScreen(),
+                          builder: (context) => const SignupScreen(),
                         ),
                       );
                     },

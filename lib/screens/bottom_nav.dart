@@ -1,3 +1,4 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media/utils/global_variable.dart';
@@ -48,37 +49,57 @@ class _BottomNavigationState extends State<BottomNavigation> {
         ),
         bottomNavigationBar: CupertinoTabBar(
           backgroundColor: Palette.black,
-          activeColor: Palette.yellow,
-          inactiveColor: Palette.white,
-          items: const <BottomNavigationBarItem>[
+          activeColor: Palette.white,
+          // inactiveColor: Palette.white,
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-              ),
+              icon: (_page == 0)
+                  ? const Icon(
+                      FluentIcons.home_12_filled,
+                    )
+                  : const Icon(
+                      FluentIcons.home_12_regular,
+                    ),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.search,
-              ),
+              icon: (_page == 1)
+                  ? const Icon(
+                      Icons.explore,
+                    )
+                  : const Icon(
+                      Icons.explore_outlined,
+                    ),
               label: 'Explore',
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-              ),
+              icon: (_page == 2)
+                  ? const Icon(
+                      Icons.person,
+                    )
+                  : const Icon(
+                      Icons.person_outline,
+                    ),
               label: 'Profile',
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.notifications,
-              ),
+              icon: (_page == 3)
+                  ? const Icon(
+                      Icons.notifications,
+                    )
+                  : const Icon(
+                      Icons.notifications_outlined,
+                    ),
               label: 'Notifications',
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.menu,
-              ),
+              icon: (_page == 4)
+                  ? const Icon(
+                      Icons.menu_outlined,
+                    )
+                  : const Icon(
+                      Icons.menu,
+                    ),
               label: 'Menu',
             ),
           ],
