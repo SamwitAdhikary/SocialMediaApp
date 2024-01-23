@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 // import 'package:social_media/create_profile.dart';
 import 'package:social_media/providers/user_provider.dart';
 import 'package:social_media/screens/bottom_nav.dart';
-import 'package:social_media/screens/signin_screen.dart';
+import 'package:social_media/screens/splashscreen.dart';
 // import 'package:social_media/homepage.dart';
 // import 'package:social_media/splashscreen.dart';
 import 'package:social_media/utils/palette.dart';
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
                 ),
               );
             }
-            return const SigninScreen();
+            return const SplashScreen();
           },
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media/screens/addpost.dart';
 import 'package:social_media/utils/palette.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -76,7 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           topRight: Radius.circular(20),
                         ),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AddPost()));
+                          },
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
