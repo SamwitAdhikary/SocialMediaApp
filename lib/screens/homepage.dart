@@ -1,7 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:social_media/screens/addImagePost.dart';
 import 'package:social_media/screens/addpost.dart';
 import 'package:social_media/utils/palette.dart';
+import 'package:social_media/utils/utils.dart';
+import 'package:social_media/widgets/imagePost.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -11,6 +20,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Uint8List? _file;
+
+  _selectImage(BuildContext parentContext) async {
+    Uint8List? file = await pickImage(ImageSource.gallery);
+    setState(() {
+      _file = file;
+    });
+
+    if (_file != null) {
+      Navigator.push(
+          parentContext,
+          MaterialPageRoute(
+              builder: (parentContext) => AddImagePost(file: file)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 10,
@@ -79,9 +105,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: InkWell(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const AddPost()));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddPost(),
+                              ),
+                            );
                           },
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
@@ -114,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               bottomLeft: Radius.circular(20),
                             ),
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () => _selectImage(context),
                               borderRadius: const BorderRadius.only(
                                 bottomLeft: Radius.circular(5),
                               ),
@@ -184,147 +212,33 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-              post(),
-              post(),
+              StreamBuilder(
+                stream:
+                    FirebaseFirestore.instance.collection('posts').snapshots(),
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                        snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return ListView.builder(
+                    reverse: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (ctx, index) {
+                      return ImagePost(
+                        snap: snapshot.data!.docs[index].data(),
+                      );
+                    },
+                  );
+                },
+              )
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget post() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
-      width: MediaQuery.of(context).size.width,
-      // color: Colors.red,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Container(
-            padding: const EdgeInsets.only(left: 10),
-            alignment: Alignment.centerLeft,
-            width: MediaQuery.of(context).size.width,
-            // color: Colors.blue,
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Palette.yellow,
-                  backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Samwit Adhikary",
-                      style: TextStyle(
-                        color: Palette.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      "2 days ago",
-                      style: TextStyle(
-                        color: Palette.darkgrey,
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.95,
-            child: const Text(
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-              style: TextStyle(
-                color: Palette.white,
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://images.unsplash.com/photo-1682687220777-2c60708d6889?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            height: 50,
-            width: MediaQuery.of(context).size.width,
-            // color: Colors.red,
-            child: const Row(
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-
-                // Like Button
-                Icon(
-                  FluentIcons.heart_48_regular,
-                  color: Palette.white,
-                  size: 25,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  "0",
-                  style: TextStyle(
-                    color: Palette.white,
-                    fontSize: 15,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-
-                // Comment Button
-                Icon(
-                  FluentIcons.comment_48_regular,
-                  color: Palette.white,
-                  size: 25,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  "0",
-                  style: TextStyle(
-                    color: Palette.white,
-                    fontSize: 15,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Divider(
-            color: Colors.grey.shade700,
-          )
-        ],
       ),
     );
   }

@@ -5,32 +5,28 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:social_media/AuthClass/firestore_methods.dart';
-import 'package:social_media/providers/user_provider.dart';
 import 'package:social_media/utils/palette.dart';
 
-class AddPost extends StatefulWidget {
-  // final Uint8List? file;
-  const AddPost({
-    super.key,
-  });
+class AddImagePost extends StatefulWidget {
+  final Uint8List? file;
+  const AddImagePost({super.key, this.file});
 
   @override
-  State<AddPost> createState() => _AddPostState();
+  State<AddImagePost> createState() => _AddImagePostState();
 }
 
-class _AddPostState extends State<AddPost> {
+class _AddImagePostState extends State<AddImagePost> {
   final TextEditingController _descriptionController = TextEditingController();
   var userData = {};
   final _formkey = GlobalKey<FormState>();
   String typing = "";
-  // Uint8List? _file;
+  Uint8List? _file;
 
   @override
   void initState() {
     super.initState();
-    // _file = widget.file;
+    _file = widget.file;
     getData();
   }
 
@@ -55,14 +51,18 @@ class _AddPostState extends State<AddPost> {
       String uid, String username, String profImage, bool isImagePost) async {
     try {
       String res = "";
-      res = await FireStoreMethods().uploadNormalPost(
+      res = await FireStoreMethods().uploadImagePost(
         _descriptionController.text,
+        _file!,
         uid,
         username,
         profImage,
       );
 
       if (res == 'success') {
+        setState(() {
+          _file = null;
+        });
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -100,25 +100,25 @@ class _AddPostState extends State<AddPost> {
     }
   }
 
-  // void clearImage() {
-  //   setState(() {
-  //     _file = null;
-  //   });
-  // }
+  void clearImage() {
+    setState(() {
+      _file = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: Palette.grey,
           leading: InkWell(
             onTap: () {
               Navigator.pop(context);
-              // setState(() {
-              //   clearImage();
-              // });
+              setState(() {
+                clearImage();
+              });
             },
             borderRadius: BorderRadius.circular(50),
             radius: 10,
@@ -134,10 +134,19 @@ class _AddPostState extends State<AddPost> {
           centerTitle: true,
           actions: [
             ElevatedButton(
-              onPressed: () => typing != ""
-                  ? addNormalPost(userData['uid'], userData['username'],
-                      userData['photoUrl'], false)
-                  : null,
+              onPressed: () {
+                if (typing != "") {
+                  if (_file == null) {
+                    addNormalPost(userData['uid'], userData['username'],
+                        userData['photoUrl'], false);
+                  } else {
+                    addNormalPost(userData['uid'], userData['username'],
+                        userData['photoUrl'], true);
+                  }
+                } else {
+                  null;
+                }
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
                   typing != "" ? Palette.yellow : Colors.grey,
@@ -199,14 +208,14 @@ class _AddPostState extends State<AddPost> {
                     child: Form(
                       key: _formkey,
                       child: TextField(
-                        autofocus: true,
+                        autofocus: false,
                         style: const TextStyle(
                           color: Palette.white,
                         ),
                         controller: _descriptionController,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "What's on your mind?",
+                          hintText: "Say someything about this photo...",
                           hintStyle: TextStyle(
                             color: Colors.grey[700],
                           ),
@@ -223,16 +232,16 @@ class _AddPostState extends State<AddPost> {
                       ),
                     ),
                   ),
-                  // _file != null
-                  //     ? Container(
-                  //         color: Colors.red,
-                  //         height: MediaQuery.of(context).size.height * 0.45,
-                  //         child: Image(
-                  //           image: MemoryImage(_file!),
-                  //           fit: BoxFit.fitWidth,
-                  //         ),
-                  //       )
-                  //     : const Offstage(),
+                  _file != null
+                      ? Container(
+                          color: Colors.red,
+                          height: MediaQuery.of(context).size.height * 0.45,
+                          child: Image(
+                            image: MemoryImage(_file!),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        )
+                      : const Offstage(),
                 ],
               )
             : const Center(

@@ -28,7 +28,7 @@ class FireStoreMethods {
         postUrl: photoUrl,
         profImage: profImage,
       );
-      _firestore.collection('imagePosts').doc(postId).set(post.toJson());
+      _firestore.collection('posts').doc(postId).set(post.toJson());
       res = 'success';
     } catch (err) {
       res = err.toString();
@@ -52,7 +52,7 @@ class FireStoreMethods {
         profImage: profImage,
       );
 
-      _firestore.collection("normalPosts").doc(postId).set(normalPost.toJson());
+      _firestore.collection("posts").doc(postId).set(normalPost.toJson());
       res = 'success';
     } catch (err) {
       res = err.toString();
