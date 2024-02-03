@@ -1,10 +1,15 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, use_build_context_synchronously
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:social_media/providers/user_provider.dart';
+import 'package:social_media/AuthClass/firestore_methods.dart';
+import 'package:social_media/screens/comment_screen.dart';
 import 'package:social_media/utils/palette.dart';
-import 'package:social_media/models/usermodel.dart' as model;
+import 'package:social_media/widgets/likeanimation.dart';
 
 class ImagePost extends StatefulWidget {
   final snap;
@@ -15,6 +20,51 @@ class ImagePost extends StatefulWidget {
 }
 
 class _ImagePostState extends State<ImagePost> {
+  bool isAnimating = false;
+  int commentLen = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCommentLen();
+  }
+
+  fetchCommentLen() async {
+    try {
+      QuerySnapshot snap = await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(widget.snap['postId'])
+          .collection('comments')
+          .get();
+
+      setState(() {
+        commentLen = snap.docs.length;
+      });
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            err.toString(),
+          ),
+        ),
+      );
+    }
+    setState(() {});
+  }
+
+  String getTimeDifferenceFromNow(DateTime dateTime) {
+    Duration difference = DateTime.now().difference(dateTime);
+    if (difference.inMinutes < 1) {
+      return "Just Now";
+    } else if (difference.inHours < 1) {
+      return "${difference.inMinutes}m ago";
+    } else if (difference.inHours < 24) {
+      return "${difference.inHours}h ago";
+    } else {
+      return DateFormat.yMMMd().format(widget.snap['datePublished'].toDate());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // final model.User user = Provider.of<UserProvider>(context).getUser;
@@ -40,7 +90,10 @@ class _ImagePostState extends State<ImagePost> {
                 CircleAvatar(
                   radius: 25,
                   backgroundColor: Palette.yellow,
-                  backgroundImage: NetworkImage(
+                  // backgroundImage: NetworkImage(
+                  //   widget.snap['profImage'].toString(),
+                  // ),
+                  backgroundImage: CachedNetworkImageProvider(
                     widget.snap['profImage'].toString(),
                   ),
                 ),
@@ -53,14 +106,14 @@ class _ImagePostState extends State<ImagePost> {
                   children: [
                     Text(
                       widget.snap['username'].toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Palette.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      DateFormat.yMMMd()
-                          .format(widget.snap['datePublished'].toDate()),
+                      getTimeDifferenceFromNow(
+                          widget.snap['datePublished'].toDate()),
                       style: TextStyle(
                         color: Palette.darkgrey,
                       ),
@@ -87,14 +140,50 @@ class _ImagePostState extends State<ImagePost> {
           ),
           widget.snap['postUrl'] != null
               ? Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          widget.snap['postUrl'].toString(),
+                  child: GestureDetector(
+                    onDoubleTap: () {
+                      FireStoreMethods().likePost(
+                        widget.snap['postId'].toString(),
+                        FirebaseAuth.instance.currentUser!.uid,
+                        widget.snap['likes'],
+                      );
+                      setState(() {
+                        isAnimating = true;
+                      });
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: CachedNetworkImageProvider(
+                                widget.snap['postUrl'].toString(),
+                              ),
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.medium,
+                            ),
+                          ),
                         ),
-                        fit: BoxFit.cover,
-                      ),
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 200),
+                          opacity: isAnimating ? 1 : 0,
+                          child: LikeAnimation(
+                            isAnimating: isAnimating,
+                            duration: const Duration(milliseconds: 400),
+                            onEnd: () {
+                              setState(() {
+                                isAnimating = false;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                              size: 100,
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 )
@@ -102,48 +191,85 @@ class _ImagePostState extends State<ImagePost> {
           const SizedBox(
             height: 10,
           ),
-          Container(
+          SizedBox(
             height: 50,
             width: MediaQuery.of(context).size.width,
             // color: Colors.red,
-            child: const Row(
+            child: Row(
               children: [
-                SizedBox(
-                  width: 10,
+                const SizedBox(
+                  width: 5,
                 ),
 
                 // Like Button
-                Icon(
-                  FluentIcons.heart_48_regular,
-                  color: Palette.white,
-                  size: 25,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  "0",
-                  style: TextStyle(
-                    color: Palette.white,
-                    fontSize: 15,
+                // Icon(
+                //   FluentIcons.heart_48_regular,
+                //   color: Palette.white,
+                //   size: 25,
+                // ),
+                LikeAnimation(
+                  isAnimating: widget.snap['likes']
+                      .contains(FirebaseAuth.instance.currentUser!.uid),
+                  smallLike: true,
+                  child: IconButton(
+                    icon: widget.snap['likes']
+                            .contains(FirebaseAuth.instance.currentUser!.uid)
+                        ? const Icon(
+                            FluentIcons.heart_48_filled,
+                            color: Colors.red,
+                          )
+                        : const Icon(
+                            FluentIcons.heart_48_regular,
+                            color: Palette.white,
+                          ),
+                    onPressed: () => FireStoreMethods().likePost(
+                        widget.snap['postId'].toString(),
+                        FirebaseAuth.instance.currentUser!.uid,
+                        widget.snap['likes']),
                   ),
                 ),
-                SizedBox(
-                  width: 10,
+                // const SizedBox(
+                //   width: 5,
+                // ),
+                Text(
+                  "${widget.snap['likes'].length}",
+                  style: const TextStyle(
+                    color: Palette.white,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(
+                  width: 15,
                 ),
 
                 // Comment Button
-                Icon(
-                  FluentIcons.comment_48_regular,
-                  color: Palette.white,
-                  size: 25,
+                // const Icon(
+                //   FluentIcons.comment_48_regular,
+                //   color: Palette.white,
+                //   size: 25,
+                // ),
+                IconButton(
+                  icon: const Icon(
+                    FluentIcons.comment_48_regular,
+                    color: Palette.white,
+                    size: 25,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CommentScreen(
+                          postId: widget.snap['postId'].toString(),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Text(
-                  "0",
-                  style: TextStyle(
+                  "$commentLen",
+                  style: const TextStyle(
                     color: Palette.white,
                     fontSize: 15,
                   ),

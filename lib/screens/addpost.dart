@@ -1,13 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:typed_data';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:social_media/AuthClass/firestore_methods.dart';
-import 'package:social_media/providers/user_provider.dart';
 import 'package:social_media/utils/palette.dart';
 
 class AddPost extends StatefulWidget {
@@ -169,7 +166,8 @@ class _AddPostState extends State<AddPost> {
                         CircleAvatar(
                           backgroundColor: Palette.yellow,
                           radius: 25,
-                          backgroundImage: NetworkImage(userData['photoUrl']),
+                          backgroundImage:
+                              CachedNetworkImageProvider(userData['photoUrl']),
                         ),
                         const SizedBox(
                           width: 10,

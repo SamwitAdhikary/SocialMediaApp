@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:social_media/screens/addImagePost.dart';
 import 'package:social_media/screens/addpost.dart';
 import 'package:social_media/utils/palette.dart';
@@ -213,14 +214,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               StreamBuilder(
-                stream:
-                    FirebaseFirestore.instance.collection('posts').snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('posts')
+                    .orderBy('datePublished', descending: false)
+                    .snapshots(),
                 builder: (context,
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                         snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 90),
+                      // color: Colors.red,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 350,
+                            child: Lottie.asset('assets/welcome.json'),
+                          ),
+                          Text(
+                            "Welcome to CreateOne.. Get started by following someone or adding post...",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Palette.darkgrey),
+                          )
+                        ],
+                      ),
                     );
                   }
                   return ListView.builder(
