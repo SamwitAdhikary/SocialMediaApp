@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:social_media/screens/addImagePost.dart';
 import 'package:social_media/screens/addpost.dart';
+import 'package:social_media/screens/search_page.dart';
 import 'package:social_media/utils/palette.dart';
 import 'package:social_media/utils/utils.dart';
 import 'package:social_media/widgets/imagePost.dart';
@@ -43,12 +44,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: NestedScrollView(
         floatHeaderSlivers: true,
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          const SliverAppBar(
+          SliverAppBar(
             snap: true,
             floating: true,
             backgroundColor: Palette.black,
             elevation: 0,
-            title: Text(
+            title: const Text(
               "CreateOne",
               style: TextStyle(
                 color: Palette.white,
@@ -56,20 +57,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             actions: [
-              Icon(
-                FluentIcons.search_48_filled,
-                color: Palette.white,
-                size: 30,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SearchPage(),
+                    ),
+                  );
+                },
+                child: const Icon(
+                  FluentIcons.search_48_filled,
+                  color: Palette.white,
+                  size: 30,
+                ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
-              Icon(
+              const Icon(
                 FluentIcons.chat_48_regular,
                 color: Palette.white,
                 size: 30,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
             ],
